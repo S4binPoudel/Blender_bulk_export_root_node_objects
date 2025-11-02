@@ -1,0 +1,2 @@
+# Blender_bulk_export_root_node_objects
+
