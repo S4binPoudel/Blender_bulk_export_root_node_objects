@@ -1,5 +1,5 @@
 # Blender_bulk_export_root_node_objects
-Bulk export multiple models with automated all model origin set to center - best for game engine
+This script allows you to batch export multiple models in Blender, automatically setting each model's origin to the center — optimized for game engine usage.
 
 Blender Version : 3.6
 
