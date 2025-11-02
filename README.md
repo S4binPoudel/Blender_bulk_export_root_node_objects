@@ -9,6 +9,7 @@ Check folder: E:/Users/YourName/Desktop/ExportedGLB/
 
 Works with folder structure:
 
+```text
 RootNode
 └── Interiors
     ├── Armchair_1
