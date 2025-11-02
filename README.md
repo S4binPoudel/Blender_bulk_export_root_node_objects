@@ -10,9 +10,9 @@ Check folder: E:/Users/YourName/Desktop/ExportedGLB/
 Works with folder structure:
 
 RootNode
- └── Interiors
-      ├── Armchair_1
-      │    └── (mesh inside)
-      ├── Armchair_2
-      │    └── (mesh inside)
-      └── Armchair_3 ...
+└── Interiors
+    ├── Armchair_1
+    │   └── (mesh inside)
+    ├── Armchair_2
+    │   └── (mesh inside)
+    └── Armchair_3 ...
