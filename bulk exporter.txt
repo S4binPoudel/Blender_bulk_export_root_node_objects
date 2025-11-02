@@ -1,0 +1,73 @@
+import bpy
+import os
+from mathutils import Vector
+
+# Configuration
+export_folder = "E:/Users/YourName/Desktop/ExportedGLB/"
+parent_name = "Interiors"
+os.makedirs(export_folder, exist_ok=True)
+
+def get_all_children(obj):
+    """Recursively return all child objects of a given parent."""
+    children = []
+    for c in obj.children:
+        children.append(c)
+        children.extend(get_all_children(c))
+    return children
+
+def get_mesh_center(obj):
+    """Compute the local bounding-box center of a mesh object."""
+    local_coords = [Vector(b) for b in obj.bound_box]
+    min_v = Vector((min(v.x for v in local_coords),
+                    min(v.y for v in local_coords),
+                    min(v.z for v in local_coords)))
+    max_v = Vector((max(v.x for v in local_coords),
+                    max(v.y for v in local_coords),
+                    max(v.z for v in local_coords)))
+    return (min_v + max_v) * 0.5
+
+parent = bpy.data.objects.get(parent_name)
+if not parent:
+    print(f"Could not find '{parent_name}' object in the scene.")
+else:
+    if bpy.ops.object.mode_set.poll():
+        bpy.ops.object.mode_set(mode='OBJECT')
+
+    for group in parent.children:
+        meshes = [o for o in get_all_children(group) if o.type == 'MESH' and o.visible_get()]
+        if not meshes:
+            continue
+
+        bpy.ops.object.select_all(action='DESELECT')
+        for m in meshes:
+            m.select_set(True)
+        bpy.context.view_layer.objects.active = meshes[0]
+
+        # Backup vertex positions
+        original_meshes = {m: [v.co.copy() for v in m.data.vertices] for m in meshes}
+
+        # Center mesh geometry around the local origin
+        for m in meshes:
+            center = get_mesh_center(m)
+            for v in m.data.vertices:
+                v.co -= center
+
+        # Export to GLB
+        filepath = os.path.join(export_folder, f"{group.name}.glb")
+        bpy.ops.export_scene.gltf(
+            filepath=filepath,
+            use_selection=True,
+            export_format='GLB',
+            export_apply=True
+        )
+
+        # Restore original geometry
+        for m in meshes:
+            orig_verts = original_meshes[m]
+            for i, v in enumerate(m.data.vertices):
+                v.co = orig_verts[i]
+
+        bpy.ops.object.select_all(action='DESELECT')
+        print(f"Exported centered: {group.name}")
+
+    print("All models exported with centered geometry origins.")
